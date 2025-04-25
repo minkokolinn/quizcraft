@@ -1,4 +1,5 @@
-import 'bootstrap';
+import * as bootstrap from 'bootstrap'; // <-- import everything from Bootstrap
+window.bootstrap = bootstrap; // <-- expose globally
 
 import { createApp, h } from "vue";
 import { createInertiaApp, Head, Link } from "@inertiajs/vue3";

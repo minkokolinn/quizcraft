@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Question;
+use App\Models\Type;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,11 +15,84 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        User::create([
+            "name" => "Dr Thiha",
+            "email" => "sample@gmail.com",
+            "password" => "sample123",
+            "subject" => "Biology",
+            "grade" => "10,11,12",
+            "chapter" => "1,2,3,4,5,6"
         ]);
+
+        Type::create([
+                "name" => "True False",
+                "header" => "State TRUE or FALSE to the following statements. Do not copy the statements.",
+                "mark" => 1
+        ]);
+        Type::create([
+            "name" => "Completion",
+            "header" => "Complete the following statements with appropriate words. Do not copy the statements.",
+            "mark" => 1
+        ]);
+        Type::create([
+            "name" => "Multiple Choice",
+            "header" => "Choose the correct answer for the following statements. Do not copy the statements.",
+            "mark" => 1
+        ]);
+        Type::create([
+            "name" => "Short Question",
+            "header" => "Answer ALL questions.",
+            "mark" => 5
+        ]); 
+        Type::create([
+            "name" => "Long Question",
+            "header" => "Answer ANY FOUR questions.",
+            "mark" => 10
+        ]);
+
+        $types = Type::all();
+        foreach ($types as $type) {
+            for ($i = 1; $i <= 5; $i++) {
+                $grade = fake()->randomElement([10, 11, 12]);
+                $chapter = fake()->numberBetween(1, 6);
+                $body = '';
+
+                switch ($type->id) {
+                    case 1: // True/False
+                    case 4: // Short Question
+                    case 5: // Long Question
+                        $body = fake()->sentence();
+                        break;
+                    case 2: // Completion
+                        $sentence = fake()->sentence();
+                        $words = explode(' ', $sentence);
+                        $blankIndex = rand(2, count($words) - 2);
+                        $words[$blankIndex] = '------';
+                        $body = implode(' ', $words);
+                        break;
+
+                    case 3: // Multiple Choice
+                        $sentence = fake()->sentence();
+                        $options = [
+                            '(A) ' . fake()->word(),
+                            '(B) ' . fake()->word(),
+                            '(C) ' . fake()->word(),
+                            '(D) ' . fake()->word()
+                        ];
+                        $body = $sentence . ' ' . implode(' ', $options);
+                        break;
+                }
+
+                Question::create([
+                    "no"=>$i,
+                    "body"=>$body,
+                    "image"=>null,
+                    "grade"=>$grade,
+                    "chapter"=>$chapter,
+                    "type_id"=>$type->id
+                ]);
+            }
+        }
     }
 }
