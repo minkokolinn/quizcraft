@@ -4,14 +4,7 @@
     <section class="section dashboard">
         <div class="row">
             <div class="col-xxl-3 col-xl-3 col-md-6">
-                <a href="/paper">
-                    <!-- <x-dashboard-card
-                                type="Paper"
-                                icon="bi bi-envelope-paper-fill"
-                                caption="Total Paper"
-                                count="{{ $paperCount }}"
-                                class="bg-primary"
-                            ></x-dashboard-card> -->
+                <Link href="/paper/configure">
                     <div class="card info-card sales-card cardhover bg-primary">
                         <div class="card-body">
                             <h5 class="card-title text-white">New Paper</h5>
@@ -28,7 +21,7 @@
                             </div>
                         </div>
                     </div>
-                </a>
+                </Link>
             </div>
             <div class="col-xxl-3 col-xl-3 col-md-6">
                 <a href="/paper">

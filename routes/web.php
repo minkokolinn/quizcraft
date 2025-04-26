@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PaperController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\UtilityController;
@@ -22,3 +23,4 @@ Route::get("/question/create/getLastNumber",[QuestionController::class,"getLastN
 Route::get("/question/{id}/edit",[QuestionController::class,"edit"]);
 Route::post("/question/{id}/edit",[QuestionController::class,"update"]);
 Route::delete("/question/delete",[QuestionController::class,"delete"]);
+Route::get("/paper/configure",[PaperController::class,"configure"]);
