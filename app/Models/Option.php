@@ -12,6 +12,9 @@ class Option extends Model
 
     protected $guarded = ["id"];
 
+    public $timestamps = false;
+
+
     public function question(){
         return $this->belongsTo(Question::class);
     }

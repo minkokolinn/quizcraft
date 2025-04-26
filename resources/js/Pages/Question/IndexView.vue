@@ -44,10 +44,27 @@
                         <br />
                         {{ selectedDetail?.body }}
                     </p>
+                    <div
+                        v-if="
+                            selectedDetail?.type_id == 3 &&
+                            selectedDetail?.options.length > 0
+                        "
+                        class="mb-2"
+                    >
+                        <span
+                            v-for="option in selectedDetail.options"
+                            :key="option.id"
+                            class="me-3"
+                            >({{ option.label }}) {{ option.content }} </span
+                        >
+                    </div>
                     <div>
                         <strong>Image</strong>
                         <br />
-                        <div v-if="selectedDetail?.image" class="col-12 col-md-10 col-lg-6">
+                        <div
+                            v-if="selectedDetail?.image"
+                            class="col-12 col-md-10 col-lg-6"
+                        >
                             <img
                                 :src="`/storage/${selectedDetail.image}`"
                                 class="img-fluid"
@@ -236,10 +253,22 @@
                     <td @dblclick="showModal(question)">
                         {{ question.chapter }}
                     </td>
-                    <td
-                        @dblclick="showModal(question)"
-                        v-text="limitWithMore(question.body, 150)"
-                    ></td>
+                    <td @dblclick="showModal(question)">
+                        {{ limitWithMore(question.body, 150) }}
+                        <div
+                            v-if="
+                                question.type_id == 3 &&
+                                question.options.length > 0
+                            "
+                        >
+                            <span
+                                v-for="option in question.options"
+                                :key="option.id"
+                                class="badge bg-dark me-2"
+                                >({{ option.label }}) {{ option.content }}</span
+                            >
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -368,6 +397,46 @@ watch(
         router.get("/question", params, { preserveState: true });
     }, 500)
 );
+
+// selection for update and delete
+watch(selectedIndexes, ()=>{
+    console.log(selectedIndexes.value);
+});
+
+// go to edit click
+const editClick = ()=>{
+    if(selectedIndexes.value.length==1){
+        router.get(`/question/${selectedIndexes.value[0]}/edit`);
+    }else{
+        alertToastRef.value.addToast("Error : choose only one row to edit!","danger");
+    }
+}
+
+// delete question
+const deleteClick = ()=>{
+    if(selectedIndexes.value.length>0){
+        if(confirm("Are you sure to delete?")){
+            router.delete("/question/delete",{
+                data:{
+                    ids:selectedIndexes.value
+                },
+                onSuccess:()=>{
+                    alertToastRef.value.addToast("Deleted Successfully...","success");
+                    selectedIndexes.value = [];
+                },
+                onError:(errors)=>{
+                    alertToastRef.value.addToast("Failed to delete!","danger");
+                    if(errors.error){
+                        alertToastRef.value.addToast(errors.error,"danger");
+                    }
+                }
+            });
+        }
+    }else{
+        alertToastRef.value.addToast("Something went wrong!","danger");
+    }
+}
+
 </script>
 <style scoped>
 tr.selected td {

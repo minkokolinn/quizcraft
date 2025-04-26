@@ -7,7 +7,7 @@
         <Link :href="`/question?type=${type.id}`" class="px-2"
             ><i class="bi bi-caret-left-fill" style="font-size: 16px"></i
         ></Link>
-        {{ type.name }} Entry Form
+        {{ type.name }} {{ question ? "Edit" : "Entry" }} Form
     </h5>
 
     <form class="row" @submit.prevent="submit">
@@ -29,8 +29,8 @@
             <div v-if="lastNo" class="text-success mt-1">
                 Last Number for this type is {{ lastNo }}
             </div>
-            <div v-if="noChecked && noExists" class="text-danger mt-1">
-                {{ form.no }} is not available
+            <div v-if="noChecked && noExists" class="text-success mt-1">
+                {{ form.no }} already exists
             </div>
             <div v-if="noChecked && !noExists" class="text-success mt-1">
                 {{ form.no }} is available
@@ -76,7 +76,7 @@
             </select>
             <InputError :message="form.errors.chapter" />
         </div>
-        <div class="col-12 my-3">
+        <div class="col-12 my-2">
             <label for="bodyInput" class="form-label"
                 ><b>Body</b>
                 <small class="form-text"> ( Enter the question ) </small></label
@@ -89,7 +89,65 @@
             </textarea>
             <InputError :message="form.errors.body" />
         </div>
-        <div class="col-12 mb-2">
+        <div v-if="type.id == 3" class="row">
+            <div class="col-md-6 col-lg-3">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="AInput">A.</span>
+                    <input
+                        v-model="form.A"
+                        type="text"
+                        class="form-control"
+                        placeholder="Enter Option A"
+                        autocomplete="off"
+                        required
+                    />
+                </div>
+                <InputError :message="form.errors.A" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="BInput">B.</span>
+                    <input
+                        v-model="form.B"
+                        type="text"
+                        class="form-control"
+                        placeholder="Enter Option B"
+                        autocomplete="off"
+                        required
+                    />
+                </div>
+                <InputError :message="form.errors.B" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="CInput">C.</span>
+                    <input
+                        v-model="form.C"
+                        type="text"
+                        class="form-control"
+                        placeholder="Enter Option C"
+                        autocomplete="off"
+                        required
+                    />
+                </div>
+                <InputError :message="form.errors.C" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="DInput">D.</span>
+                    <input
+                        v-model="form.D"
+                        type="text"
+                        class="form-control"
+                        placeholder="Enter Option D"
+                        autocomplete="off"
+                        required
+                    />
+                </div>
+                <InputError :message="form.errors.D" />
+            </div>
+        </div>
+        <div v-if="!hasOldImage" class="col-12 mb-2">
             <label for="imageInput" class="form-label"><b>Image</b></label>
             <input
                 name="form.image"
@@ -100,14 +158,18 @@
             />
             <InputError :message="form.errors.image" />
         </div>
+        <div v-if="hasOldImage" class="col-12 mb-2">
+            <label class="form-label"><b>Existing Image:</b></label>
+            <img :src="`/storage/${question.image}`" class="img-fluid w-50" />
+        </div>
+
         <div class="d-flex justify-content-end">
             <button
                 type="submit"
                 class="btn btn-primary"
                 :disabled="form.processing"
             >
-                <!-- {{ type ? "Update" : "Save" }} -->
-                Save
+                {{ question ? "Update" : "Save" }}
             </button>
         </div>
     </form>
@@ -127,16 +189,34 @@ defineOptions({
 const props = defineProps({
     type: Object,
     user: Object,
+    question: Object,
 });
 
 const form = useForm({
-    no: null,
-    body: null,
+    no: props.question ? props.question.no : null,
+    body: props.question ? props.question.body : null,
     image: null,
-    grade: "",
-    chapter: "",
+    grade: props.question ? props.question.grade : "",
+    chapter: props.question ? props.question.chapter : "",
     type_id: props.type.id,
+    A:
+        props.question && props.question.type_id == 3
+            ? props.question.options[0].content
+            : null,
+    B:
+        props.question && props.question.type_id == 3
+            ? props.question.options[1].content
+            : null,
+    C:
+        props.question && props.question.type_id == 3
+            ? props.question.options[2].content
+            : null,
+    D:
+        props.question && props.question.type_id == 3
+            ? props.question.options[3].content
+            : null,
 });
+const hasOldImage = ref(!!props.question?.image);
 
 const alertToastRef = ref(null);
 
@@ -170,16 +250,30 @@ watch(
 );
 
 onMounted(async () => {
-    try {
-        const response = await axios.get("/question/create/getLastNumber", {
-            params: {
-                type: props.type.id,
-            },
-        });
-        lastNo.value = response.data.lastNo;
-        form.no = lastNo.value+1;
-    } catch (error) {
-        console.error("Failed to fetch last number", error);
+    if (!props.question) {
+        // only if no question to edit
+        try {
+            const response = await axios.get("/question/create/getLastNumber", {
+                params: {
+                    type: props.type.id,
+                },
+            });
+            lastNo.value = response.data.lastNo;
+            form.no = lastNo.value + 1;
+        } catch (error) {
+            console.error("Failed to fetch last number", error);
+        }
+    }else{
+        try {
+            const response = await axios.get("/question/create/getLastNumber", {
+                params: {
+                    type: props.type.id,
+                },
+            });
+            lastNo.value = response.data.lastNo;
+        } catch (error) {
+            console.error("Failed to fetch last number", error);
+        }
     }
 });
 
@@ -188,11 +282,22 @@ const uploadImage = (e) => {
     form.image = e.target.files[0];
 };
 const submit = () => {
-    if (noExists.value) {
-        alertToastRef.value.addToast(
-            "Number is already occupied! Change the number!",
-            "danger"
-        );
+    if (props.question) {
+        form.post(`/question/${props.question.id}/edit`,{
+            onSuccess:()=>{
+                alertToastRef.value.addToast("Question successfully updated...", "success");
+            },
+            onError:(errors)=>{
+                if (errors.error) {
+                    alertToastRef.value.addToast(errors.error, "danger");
+                } else {
+                    alertToastRef.value.addToast(
+                        "Something went wrong! Failed to edit question!",
+                        "danger"
+                    );
+                }
+            }
+        });
     } else {
         form.post("/question/create", {
             onSuccess: async () => {
@@ -211,7 +316,7 @@ const submit = () => {
                         }
                     );
                     lastNo.value = response.data.lastNo;
-                    form.no = lastNo.value+1;
+                    form.no = lastNo.value + 1;
                 } catch (error) {
                     console.error("Failed to fetch last number", error);
                 }

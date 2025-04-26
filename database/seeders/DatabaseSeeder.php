@@ -74,17 +74,17 @@ class DatabaseSeeder extends Seeder
 
                     case 3: // Multiple Choice
                         $sentence = fake()->sentence();
-                        $options = [
-                            '(A) ' . fake()->word(),
-                            '(B) ' . fake()->word(),
-                            '(C) ' . fake()->word(),
-                            '(D) ' . fake()->word()
-                        ];
-                        $body = $sentence . ' ' . implode(' ', $options);
+                        $options = collect([
+                            ['label'=>'A','content'=>fake()->word()],
+                            ['label'=>'B','content'=>fake()->word()],
+                            ['label'=>'C','content'=>fake()->word()],
+                            ['label'=>'D','content'=>fake()->word()],
+                        ]);
+                        $body = $sentence;
                         break;
                 }
 
-                Question::create([
+                $question=Question::create([
                     "no"=>$i,
                     "body"=>$body,
                     "image"=>null,
@@ -92,6 +92,9 @@ class DatabaseSeeder extends Seeder
                     "chapter"=>$chapter,
                     "type_id"=>$type->id
                 ]);
+                if($question->type_id==3){
+                    $question->options()->createMany($options);
+                }
             }
         }
     }

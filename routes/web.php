@@ -19,3 +19,6 @@ Route::get("/question/create", [QuestionController::class,"create"]);
 Route::post("/question/create", [QuestionController::class,"store"]);
 Route::get("/question/create/checkNumberExist",[QuestionController::class,"checkNumberExist"]);
 Route::get("/question/create/getLastNumber",[QuestionController::class,"getLastNumber"]);
+Route::get("/question/{id}/edit",[QuestionController::class,"edit"]);
+Route::post("/question/{id}/edit",[QuestionController::class,"update"]);
+Route::delete("/question/delete",[QuestionController::class,"delete"]);
