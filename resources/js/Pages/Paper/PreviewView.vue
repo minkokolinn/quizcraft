@@ -619,7 +619,7 @@ function onReady(editor) {
             if (question.image) {
                 initialContent += `
                     <figure class="image image-style-align-center">
-                        <img src="/storage/${question.image}" style="width: 50%;" />
+                        <img src="${question.image}" style="width: 50%;" />
                     </figure>
                 `;
             }

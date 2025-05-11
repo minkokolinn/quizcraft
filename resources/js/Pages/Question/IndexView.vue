@@ -55,8 +55,8 @@
                             v-for="option in selectedDetail.options"
                             :key="option.id"
                             class="me-3"
-                            >({{ option.label }}) {{ option.content }} </span
-                        >
+                            >({{ option.label }}) {{ option.content }}
+                        </span>
                     </div>
                     <div>
                         <strong>Image</strong>
@@ -66,7 +66,7 @@
                             class="col-12 col-md-10 col-lg-6"
                         >
                             <img
-                                :src="`/storage/${selectedDetail.image}`"
+                                :src="`${selectedDetail.image}`"
                                 class="img-fluid"
                                 alt=""
                             />
@@ -254,7 +254,10 @@
                         {{ question.chapter }}
                     </td>
                     <td @dblclick="showModal(question)">
-                        <i v-if="question.image" class="bi bi-file-image text-primary"></i>
+                        <i
+                            v-if="question.image"
+                            class="bi bi-file-image text-primary"
+                        ></i>
                         {{ limitWithMore(question.body, 150) }}
                         <div
                             v-if="
@@ -417,10 +420,9 @@ const editClick = ()=>{
 const deleteClick = ()=>{
     if(selectedIndexes.value.length>0){
         if(confirm("Are you sure to delete?")){
-            router.delete("/question/delete",{
-                data:{
+            router.post("/question/delete",{
                     ids:selectedIndexes.value
-                },
+                },{
                 onSuccess:()=>{
                     alertToastRef.value.addToast("Deleted Successfully...","success");
                     selectedIndexes.value = [];
@@ -437,7 +439,6 @@ const deleteClick = ()=>{
         alertToastRef.value.addToast("Something went wrong!","danger");
     }
 }
-
 </script>
 <style scoped>
 tr.selected td {

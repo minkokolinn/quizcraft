@@ -94,7 +94,7 @@ const form = useForm({
 
 const submit = () => {
     if (props.type) {
-        form.put(`/type/${props.type.id}/edit`, {
+        form.post(`/type/${props.type.id}/edit`, {
             onSuccess: () => {
                 alertToastRef.value.addToast(
                     "Type successfully updated..",

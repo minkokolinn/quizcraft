@@ -179,10 +179,9 @@ const limitWithMore = (text, limit = 150) => {
 const deleteClick=()=>{
     if(selectedIndexes.value.length>0){
         if(confirm("Are you sure to delete?")){
-            router.delete("/type/delete",{
-                data:{
+            router.post("/type/delete",{
                     ids:selectedIndexes.value
-                },
+                },{
                 onSuccess:()=>{
                     alertToastRef.value.addToast("Deleted Successfully...","success");
                     selectedIndexes.value = [];

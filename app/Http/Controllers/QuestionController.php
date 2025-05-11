@@ -8,6 +8,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -87,7 +88,13 @@ class QuestionController extends Controller
         ]);
 
         if ($request->hasFile("image")) {
-            $formData["image"] = Storage::disk("public")->put("uploads", $request->file("image"));
+            $filename = uniqid() . '.' . $request->file("image")->getClientOriginalExtension();
+
+            // Move the file to public/uploads
+            $request->file("image")->move(public_path("uploads"), $filename);
+
+            // Store only the relative path in the database
+            $formData["image"] = "/uploads/" . $filename;
         }
 
         try {
@@ -142,7 +149,13 @@ class QuestionController extends Controller
         ]);
 
         if ($request->hasFile("image")) {
-            $updatedData["image"] = Storage::disk("public")->put("uploads", $request->file("image"));
+            $filename = uniqid() . '.' . $request->file("image")->getClientOriginalExtension();
+
+            // Move the file to public/uploads
+            $request->file("image")->move(public_path("uploads"), $filename);
+
+            // Store only the relative path in the database
+            $formData["image"] = "/uploads/" . $filename;
         }
         try {
             $question = Question::findOrFail($id);
@@ -194,7 +207,10 @@ class QuestionController extends Controller
         $images = Question::whereIn("id", $ids)->pluck("image")->filter();
 
         foreach ($images as $imagePath) {
-            Storage::disk("public")->delete($imagePath);
+            $fullPath = public_path($imagePath);
+            if (File::exists($fullPath)) {
+                File::delete($fullPath);
+            }
         }
 
         Question::whereIn("id", $ids)->delete();
