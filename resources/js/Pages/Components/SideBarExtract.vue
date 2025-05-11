@@ -58,15 +58,15 @@
                     data-bs-parent="#sidebar-nav"
                 >
                     <li>
-                        <a href="/quiz">
+                        <Link href="/paper/create/step/1">
                             <i class="bi bi-circle"></i><span>New paper</span>
-                        </a>
+                        </Link>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="/quiz">
                             <i class="bi bi-circle"></i><span>Open paper</span>
                         </a>
-                    </li>
+                    </li> -->
                 </ul>
             </li>
             <li class="nav-heading">Utility</li>

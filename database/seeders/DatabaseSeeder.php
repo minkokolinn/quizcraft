@@ -7,6 +7,7 @@ use App\Models\Type;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -53,7 +54,7 @@ class DatabaseSeeder extends Seeder
 
         $types = Type::all();
         foreach ($types as $type) {
-            for ($i = 1; $i <= 5; $i++) {
+            for ($i = 1; $i <= 30; $i++) {
                 $grade = fake()->randomElement([10, 11, 12]);
                 $chapter = fake()->numberBetween(1, 6);
                 $body = '';
@@ -75,10 +76,10 @@ class DatabaseSeeder extends Seeder
                     case 3: // Multiple Choice
                         $sentence = fake()->sentence();
                         $options = collect([
-                            ['label'=>'A','content'=>fake()->word()],
-                            ['label'=>'B','content'=>fake()->word()],
-                            ['label'=>'C','content'=>fake()->word()],
-                            ['label'=>'D','content'=>fake()->word()],
+                            ['label'=>'A','content'=>Str::random(25)],
+                            ['label'=>'B','content'=>Str::random(10)],
+                            ['label'=>'C','content'=>Str::random(10)],
+                            ['label'=>'D','content'=>Str::random(10)],
                         ]);
                         $body = $sentence;
                         break;

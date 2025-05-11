@@ -12,11 +12,12 @@
     <link href="{{ asset('assets/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
 
 
+
     @vite([
         'resources/css/app.css', 
         'resources/js/app.js', 
         'resources/js/template/main.js', 
-        'resources/css/template/style.css'
+        'resources/css/template/style.css',
         ])
     @inertiaHead
 </head>

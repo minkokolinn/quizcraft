@@ -3,6 +3,9 @@ window.bootstrap = bootstrap; // <-- expose globally
 
 import { createApp, h } from "vue";
 import { createInertiaApp, Head, Link } from "@inertiajs/vue3";
+import '../css/ckeditor_style.css';
+
+
 
 createInertiaApp({
     title:(title)=>`QuizCraft ${title}`,

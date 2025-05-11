@@ -23,4 +23,7 @@ Route::get("/question/create/getLastNumber",[QuestionController::class,"getLastN
 Route::get("/question/{id}/edit",[QuestionController::class,"edit"]);
 Route::post("/question/{id}/edit",[QuestionController::class,"update"]);
 Route::delete("/question/delete",[QuestionController::class,"delete"]);
-Route::get("/paper/configure",[PaperController::class,"configure"]);
+
+Route::get("/paper/create/step/{step}",[PaperController::class,"stepShift"]);
+Route::post("/paper/create/step/{step}",[PaperController::class,"stepShift"]);
+Route::get("/question/fetchQuestions",[PaperController::class,"fetchQuestions"]);

@@ -6,25 +6,29 @@
     <div class="pt-1 mt-2">
         <div class="stepper-wrapper">
             <div class="stepper-item completed">
-                <a href="/paper">
+                <Link href="/">
                     <div class="step-counter">
                         <i class="bi bi-house-door"></i>
                     </div>
-                </a>
+                </Link>
                 <div class="step-name">Back</div>
             </div>
-            <div class="stepper-item active" @click="step = 1">
-                <div class="step-counter" id="btn1">1</div>
+            <div class="stepper-item active">
+                <Link href="/paper/create/step/1" method="post" :data="{ info,sections }" style="background: transparent; border: none;">
+                    <div class="step-counter" id="btn1">1</div>
+                </Link>
                 <div class="step-name">Configure Paper</div>
             </div>
-            <div class="stepper-item" @click="step = 2">
-                <div class="step-counter" id="btn2">2</div>
+            <div class="stepper-item">
+                <Link href="/paper/create/step/2" method="post" :data="{ info,sections }" style="background: transparent; border: none;">
+                    <div class="step-counter" id="btn2">2</div>
+                </Link>
                 <div class="step-name">Insert Questions</div>
             </div>
             <div class="stepper-item">
-                <a href="">
-                    <div class="step-counter" id="btn3">3</div>
-                </a>
+                <Link href="/paper/create/step/2" method="post" :data="{ info,sections }" style="background: transparent; border: none;">
+                    <div class="step-counter" id="btn2">3</div>
+                </Link>
                 <div class="step-name">Preview</div>
             </div>
         </div>
@@ -32,20 +36,17 @@
     <hr />
 
     <!-- Step 1 - Configure Paper -->
-    <div v-if="step === 1" class="text-center mb-4">
+    <div class="text-center mb-4">
         <h4 class="fw-bold">Configure Paper</h4>
     </div>
-    <div
-        v-if="step === 1"
-        class="text-start text-md-end col-md-10 col-lg-7 mx-auto"
-    >
+    <div class="text-start text-md-end col-md-10 col-lg-7 mx-auto">
         <div class="row mb-3">
             <label for="subjectTb" class="col-sm-2 col-form-label"
                 ><b>Subject</b></label
             >
             <div class="col-sm-10 text-start">
                 <input
-                    v-model="subject"
+                    v-model="info.subject"
                     type="text"
                     class="form-control border-dark-subtle"
                     id="subjectTb"
@@ -59,7 +60,7 @@
             >
             <div class="col-sm-10 text-start">
                 <select
-                    v-model="grade"
+                    v-model="info.grade"
                     class="form-select border-dark-subtle"
                     id="grade"
                     aria-label="Default select example"
@@ -81,24 +82,10 @@
             >
             <div class="col-sm-10 text-start">
                 <input
-                    v-model="timeAllowed"
+                    v-model="info.timeAllowed"
                     type="text"
                     class="form-control border-dark-subtle"
                     id="timeAllowedTb"
-                    value=""
-                />
-            </div>
-        </div>
-        <div class="row mb-3">
-            <label for="total_mark" class="col-sm-2 col-form-label"
-                ><b>Total Mark</b></label
-            >
-            <div class="col-sm-10 text-start">
-                <input
-                    v-model="totalMark"
-                    type="number"
-                    class="form-control border-dark-subtle"
-                    id="total_mark"
                     value=""
                 />
             </div>
@@ -109,20 +96,20 @@
             >
             <div class="col-sm-10 text-start" id="inputContainer">
                 <div
-                    v-for="(header, index) in headers"
+                    v-for="(header, index) in info.headers"
                     :key="index"
                     class="input-group mb-2"
                 >
                     <input
                         type="text"
                         class="form-control"
-                        v-model="headers[index]"
+                        v-model="info.headers[index]"
                         :placeholder="`Header ${index + 1}`"
                     />
                     <button
                         class="btn"
                         :class="
-                            index === headers.length - 1
+                            index === info.headers.length - 1
                                 ? 'btn-primary'
                                 : 'btn-danger'
                         "
@@ -131,7 +118,7 @@
                     >
                         <i
                             :class="
-                                index === headers.length - 1
+                                index === info.headers.length - 1
                                     ? 'bi bi-plus-lg'
                                     : 'bi bi-dash-lg'
                             "
@@ -141,33 +128,34 @@
             </div>
         </div>
         <div class="text-end">
-            <button type="button" class="btn btn-primary" @click="step = 2">
-                Next
-            </button>
-        </div>
-    </div>
-
-    <!-- Step 2 - Insert Questions -->
-    <div v-if="step === 2" class="text-center mb-4">
-        <h4 class="fw-bold">Insert Questions</h4>
-    </div>
-    <div v-if="step === 2" class="m-3">
-        <div class="text-center pt-3">
-            <h5 class="fw-bold" v-for="(header,index) in headers" :key="index">{{ header }}</h5>
-        </div>
-        <hr />
-        <div class="row">
-            <h6 class="col text-start">Grade - {{ grade }}</h6>
-            <h6 class="col text-center">{{ subject }}</h6>
-            <h6 class="col text-end">Time Allowed : {{ timeAllowed }}</h6>
-        </div>
-        <div id="paperContent">
-            
+            <Link
+                href="/paper/create/step/2"
+                method="post"
+                :data="{ info, sections }"
+                class="btn btn-primary"
+                :class="{
+                    disabled:
+                        !info.subject ||
+                        !info.grade ||
+                        !info.timeAllowed ||
+                        info.headers[0] == '',
+                }"
+                @click.prevent="
+                    !info.subject ||
+                    !info.grade ||
+                    !info.timeAllowed ||
+                    info.headers[0] == ''
+                        ? null
+                        : undefined
+                "
+                >Next</Link
+            >
         </div>
     </div>
 </template>
 <script setup>
-import { ref, watch } from "vue";
+import { router } from "@inertiajs/vue3";
+import { onMounted, reactive, ref } from "vue";
 import BlankLayout from "../../Layouts/BlankLayout.vue";
 import AlertToast from "../Components/AlertToast.vue";
 
@@ -176,27 +164,40 @@ defineOptions({
 });
 const props = defineProps({
     user: Object,
+    info: Object,
+    sections: Array
 });
 
+// For Step 1
 const grades = props.user.grade.split(",");
 const chapters = props.user.chapter.split(",");
-let step = ref(1);
+const alertToastRef = ref(null);
 
-// Header
-const headers = ref([""]);
+const info = ref(props.info ?? {
+    subject: null,
+    grade: "",
+    timeAllowed: null,
+    headers: [""],
+});
+const sections = ref(props.sections ?? []);
+
+console.log('step 1');
+console.log(info.value);
+console.log(sections.value);
+
 function handleButtonClick(index) {
-    if (index === headers.value.length - 1) {
-        headers.value.push("");
+    if (index === info.value.headers.length - 1) {
+        info.value.headers.push("");
     } else {
-        headers.value.splice(index, 1);
+        info.value.headers.splice(index, 1);
     }
 }
 
-const subject = ref(null);
-const grade = ref("");
-const timeAllowed = ref(null);
-const totalMark = ref(0);
-
+onMounted(()=>{
+    if(props.info){
+        info.value = {...props.info}
+    }
+})
 </script>
 <style scoped>
 .stepper-wrapper {
@@ -283,5 +284,8 @@ const totalMark = ref(0);
 }
 .stepper-item:last-child::after {
     content: none;
+}
+.list-group-item {
+    cursor: grab;
 }
 </style>

@@ -254,6 +254,7 @@
                         {{ question.chapter }}
                     </td>
                     <td @dblclick="showModal(question)">
+                        <i v-if="question.image" class="bi bi-file-image text-primary"></i>
                         {{ limitWithMore(question.body, 150) }}
                         <div
                             v-if="
