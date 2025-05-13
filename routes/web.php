@@ -34,63 +34,9 @@ Route::get("/paper/create/step/{step}", [PaperController::class, "stepShift"]);
 Route::post("/paper/create/step/{step}", [PaperController::class, "stepShift"]);
 Route::get("/question/fetchQuestions", [PaperController::class, "fetchQuestions"]);
 
+Route::get("/profile", [UtilityController::class, "profile"]);
+Route::post("/profile/update-grade", [UtilityController::class, "updateUserGrade"]);
+Route::post("/profile/update-chapter", [UtilityController::class, "updateUserChapter"]);
 
-Route::get('/run-backup', function (Request $request) {
-    if (!$request->query('key') || $request->query('key') !== "0WJHQ6DlhBquuA6DQke34pEe5TBFrT") {
-        abort(403, 'Unauthorized: Invalid or missing key');
-    }
 
-    try {
-        $database = config('database.connections.mysql.database');
-        $tables = DB::select('SHOW TABLES');
-        $tableKey = 'Tables_in_' . $database;
-
-        $tableOrder = [
-            'types',
-            'questions',
-            'options',
-        ];
-
-        $systemTables = ['migrations', 'jobs', 'failed_jobs', 'cache', 'sessions', 'users', 'password_reset_tokens', 'job_batches', 'cache_locks'];
-
-        $nonSystemTables = array_filter($tables, function ($table) use ($tableKey, $systemTables, $tableOrder) {
-            return !in_array($table->$tableKey, array_merge($systemTables, $tableOrder));
-        });
-
-        $finalTables = array_merge($tableOrder, array_column($nonSystemTables, $tableKey), $systemTables);
-
-        $sqlDump = "";
-
-        foreach ($finalTables as $tableName) {
-            $createTable = DB::select("SHOW CREATE TABLE `$tableName`")[0]->{'Create Table'};
-            $sqlDump .= "\n\n-- ----------------------------\n";
-            $sqlDump .= "-- Table structure for `$tableName`\n";
-            $sqlDump .= "-- ----------------------------\n";
-            $sqlDump .= $createTable . ";\n";
-
-            $rows = DB::table($tableName)->get();
-            if (!$rows->isEmpty()) {
-                $sqlDump .= "\n-- ----------------------------\n";
-                $sqlDump .= "-- Records of `$tableName`\n";
-                $sqlDump .= "-- ----------------------------\n";
-
-                foreach ($rows as $row) {
-                    $columns = array_map(fn($v) => "`$v`", array_keys((array)$row));
-                    $values = array_map(function ($v) {
-                        return is_null($v) ? 'NULL' : DB::getPdo()->quote($v);
-                    }, array_values((array)$row));
-
-                    $sqlDump .= "INSERT INTO `$tableName` (" . implode(", ", $columns) . ") VALUES (" . implode(", ", $values) . ");\n";
-                }
-            }
-        }
-
-        Mail::to('hmtmmmmkklmthn@gmail.com')->send(new DatabaseBackupMail($sqlDump));
-
-        return response()->json(['message' => 'Backup completed and email sent successfully.']);
-    } catch (\Throwable $e) {
-        Log::error('Database backup failed: ' . $e->getMessage());
-
-        return response()->json(['error' => 'Backup failed. Please try again later.']);
-    }
-});
+Route::post('/run-backup', [UtilityController::class,"runBackup"]);

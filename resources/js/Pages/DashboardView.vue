@@ -48,6 +48,17 @@
         </div>
     </div>
 
+    <div class="d-flex justify-content-between main-header">
+        <div class="pagetitle">
+            <h1>Dashboard</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item active">QuizCraft | Dashboard</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
     <section class="section dashboard">
         <div class="row">
             <div class="col-xxl-3 col-xl-3 col-md-6">

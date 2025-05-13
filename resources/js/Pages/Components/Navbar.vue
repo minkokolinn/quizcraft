@@ -11,21 +11,21 @@
         <nav class="header-nav ms-auto">
             <ul class="d-flex align-items-center">
                 <li class="nav-item pe-3">
-                    <a
+                    <Link
+                        href="/profile"
                         class="nav-link nav-profile d-flex align-items-center pe-0"
-                        href="#"
                     >
                         <span class="d-none d-md-block ps-2"
                             >Dr. Thiha (Biology)</span
                         >
-                    </a>
+                    </Link>
                 </li>
             </ul>
         </nav>
     </header>
 </template>
 <script setup>
-const toggleSidebar = ()=>{
+const toggleSidebar = () => {
     document.body.classList.toggle("toggle-sidebar");
-}
+};
 </script>
