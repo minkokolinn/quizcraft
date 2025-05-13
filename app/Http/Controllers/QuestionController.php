@@ -94,7 +94,7 @@ class QuestionController extends Controller
             $request->file("image")->move(public_path("uploads"), $filename);
 
             // Store only the relative path in the database
-            $formData["image"] = "/uploads/" . $filename;
+            $formData["image"] = "/public/uploads/" . $filename;
         }
 
         try {
@@ -155,7 +155,7 @@ class QuestionController extends Controller
             $request->file("image")->move(public_path("uploads"), $filename);
 
             // Store only the relative path in the database
-            $formData["image"] = "/uploads/" . $filename;
+            $formData["image"] = "/public/uploads/" . $filename;
         }
         try {
             $question = Question::findOrFail($id);
@@ -207,7 +207,8 @@ class QuestionController extends Controller
         $images = Question::whereIn("id", $ids)->pluck("image")->filter();
 
         foreach ($images as $imagePath) {
-            $fullPath = public_path($imagePath);
+            $relativePath = str_replace('/public', '', $imagePath); // remove wrong prefix
+            $fullPath = public_path($relativePath); // get actual full path
             if (File::exists($fullPath)) {
                 File::delete($fullPath);
             }
