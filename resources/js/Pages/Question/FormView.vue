@@ -12,31 +12,6 @@
 
     <form class="row" @submit.prevent="submit">
         <div class="col-md-4">
-            <label for="noInput" class="form-label"
-                ><b>Number</b>
-                <small class="form-text"> ( Enter the number ) </small></label
-            >
-            <input
-                v-model="form.no"
-                type="number"
-                class="form-control"
-                id="noInput"
-                autocomplete="off"
-                min="1"
-                required
-            />
-            <InputError :message="form.errors.no" />
-            <div v-if="lastNo" class="text-success mt-1">
-                Last Number for this type is {{ lastNo }}
-            </div>
-            <div v-if="noChecked && noExists" class="text-success mt-1">
-                {{ form.no }} already exists
-            </div>
-            <div v-if="noChecked && !noExists" class="text-success mt-1">
-                {{ form.no }} is available
-            </div>
-        </div>
-        <div class="col-md-4">
             <label for="gradeInput" class="form-label"><b>Grade</b></label>
             <select
                 v-model="form.grade"
@@ -76,6 +51,32 @@
             </select>
             <InputError :message="form.errors.chapter" />
         </div>
+        <div class="col-md-4">
+            <label for="noInput" class="form-label"
+                ><b>Number</b>
+                <small class="form-text"> ( Enter the number ) </small></label
+            >
+            <input
+                v-model="form.no"
+                type="number"
+                class="form-control"
+                id="noInput"
+                autocomplete="off"
+                min="1"
+                required
+            />
+            <InputError :message="form.errors.no" />
+            <div v-if="lastNo" class="text-success mt-1">
+                Last Number for this type is {{ lastNo }}
+            </div>
+            <div v-if="noChecked && noExists" class="text-success mt-1">
+                {{ form.no }} already exists
+            </div>
+            <div v-if="noChecked && !noExists" class="text-success mt-1">
+                {{ form.no }} is available
+            </div>
+        </div>
+
         <div class="col-12 my-2">
             <label for="bodyInput" class="form-label"
                 ><b>Body</b>
@@ -237,6 +238,8 @@ watch(
                 {
                     params: {
                         type: props.type.id,
+                        grade: form.grade,
+                        chapter: form.chapter,
                         noToCheck: no,
                     },
                 }
@@ -249,30 +252,44 @@ watch(
     }, 700)
 );
 
-onMounted(async () => {
+watch([() => form.grade, () => form.chapter], async () => {
     if (!props.question) {
         // only if no question to edit
-        try {
-            const response = await axios.get("/question/create/getLastNumber", {
-                params: {
-                    type: props.type.id,
-                },
-            });
-            lastNo.value = response.data.lastNo;
-            form.no = lastNo.value + 1;
-        } catch (error) {
-            console.error("Failed to fetch last number", error);
+        if (form.grade && form.chapter) {
+            try {
+                const response = await axios.get(
+                    "/question/create/getLastNumber",
+                    {
+                        params: {
+                            type: props.type.id,
+                            grade: form.grade,
+                            chapter: form.chapter,
+                        },
+                    }
+                );
+                lastNo.value = response.data.lastNo;
+                form.no = lastNo.value + 1;
+            } catch (error) {
+                console.error("Failed to fetch last number", error);
+            }
         }
-    }else{
-        try {
-            const response = await axios.get("/question/create/getLastNumber", {
-                params: {
-                    type: props.type.id,
-                },
-            });
-            lastNo.value = response.data.lastNo;
-        } catch (error) {
-            console.error("Failed to fetch last number", error);
+    } else {
+        if (form.grade && form.chapter) {
+            try {
+                const response = await axios.get(
+                    "/question/create/getLastNumber",
+                    {
+                        params: {
+                            type: props.type.id,
+                            grade: form.grade,
+                            chapter: form.chapter,
+                        },
+                    }
+                );
+                lastNo.value = response.data.lastNo;
+            } catch (error) {
+                console.error("Failed to fetch last number", error);
+            }
         }
     }
 });
@@ -283,11 +300,14 @@ const uploadImage = (e) => {
 };
 const submit = () => {
     if (props.question) {
-        form.post(`/question/${props.question.id}/edit`,{
-            onSuccess:()=>{
-                alertToastRef.value.addToast("Question successfully updated...", "success");
+        form.post(`/question/${props.question.id}/edit`, {
+            onSuccess: () => {
+                alertToastRef.value.addToast(
+                    "Question successfully updated...",
+                    "success"
+                );
             },
-            onError:(errors)=>{
+            onError: (errors) => {
                 if (errors.error) {
                     alertToastRef.value.addToast(errors.error, "danger");
                 } else {
@@ -296,12 +316,16 @@ const submit = () => {
                         "danger"
                     );
                 }
-            }
+            },
         });
     } else {
         form.post("/question/create", {
             onSuccess: async () => {
+                const previousGrade = form.grade;
+                const previousChapter = form.chapter;
                 form.reset();
+                form.grade = previousGrade;
+                form.chapter = previousChapter;
                 alertToastRef.value.addToast(
                     "Question successfully created..",
                     "success"
@@ -312,6 +336,8 @@ const submit = () => {
                         {
                             params: {
                                 type: props.type.id,
+                                grade: form.grade,
+                                chapter: form.chapter
                             },
                         }
                     );

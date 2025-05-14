@@ -49,9 +49,13 @@ class QuestionController extends Controller
     public function checkNumberExist(Request $request)
     {
         $typeId = $request->input("type");
+        $grade = $request->input("grade");
+        $chapter = $request->input("chapter");
         $noToCheck = $request->input("noToCheck");
 
         $noExists = Question::where("type_id", $typeId)
+            ->where("grade", $grade)
+            ->where("chapter", $chapter)
             ->where("no", $noToCheck)
             ->exists();
 
@@ -63,8 +67,12 @@ class QuestionController extends Controller
     public function getLastNumber(Request $request)
     {
         $typeId = $request->input("type");
+        $grade = $request->input("grade");
+        $chapter = $request->input("chapter");
 
         $lastNo = Question::where("type_id", $typeId)
+            ->where("grade", $grade)
+            ->where("chapter", $chapter)
             ->max("no");
 
         return response()->json([
@@ -100,10 +108,14 @@ class QuestionController extends Controller
         try {
             // Update number if question is added with already existed number
             $noExists = Question::where("type_id", $formData["type_id"])
+                ->where("grade", $formData["grade"])
+                ->where("chapter", $formData["chapter"])
                 ->where("no", $formData["no"])
                 ->exists();
             if ($noExists) {
                 Question::where('type_id', $formData['type_id'])
+                    ->where("grade", $formData["grade"])
+                    ->where("chapter", $formData["chapter"])
                     ->where('no', '>=', $formData['no'])
                     ->increment('no');
             }
@@ -168,9 +180,13 @@ class QuestionController extends Controller
             // Update number if question is added with already existed number
             $noExists = Question::where("type_id", $updatedData["type_id"])
                 ->where("no", $updatedData["no"])
+                ->where("grade", $updatedData["grade"])
+                ->where("chapter", $updatedData["chapter"])
                 ->exists();
             if ($noExists && $question->no != $updatedData["no"]) {
                 Question::where('type_id', $updatedData['type_id'])
+                    ->where("grade", $updatedData["grade"])
+                    ->where("chapter", $updatedData["chapter"])
                     ->where('no', '>=', $updatedData['no'])
                     ->increment('no');
             }
