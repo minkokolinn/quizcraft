@@ -577,45 +577,7 @@ function onReady(editor) {
         section.section_questions.forEach((question) => {
             initialContent += `<li>
                 <p style="margin-bottom:10px;">${question.body}</p>`;
-            if (question.options.length > 0) {
-                // Determine max content length
-                // Determine max content length
-                const maxLength = Math.max(
-                    ...question.options.map((o) => o.content.length)
-                );
-
-                // Set layout based on longest option
-                let groupSize = 4;
-                if (maxLength > 40) {
-                    groupSize = 1; // four lines
-                } else if (maxLength > 20) {
-                    groupSize = 2; // two lines
-                }
-
-                // Start layout container
-                initialContent += `<div style="display: flex; flex-direction: column; gap: 6px;">`;
-
-                for (let i = 0; i < question.options.length; i += groupSize) {
-                    initialContent += `<div style="display: flex; gap: 20px;">`;
-
-                    for (
-                        let j = 0;
-                        j < groupSize && i + j < question.options.length;
-                        j++
-                    ) {
-                        const option = question.options[i + j];
-                        initialContent += `
-            <div style="display: flex; align-items: flex-start; flex: 1; min-width: 0;">
-                <p style="margin: 0;"><span style="width: 20px; font-weight: bold;">${option.label}.</span></p>
-                <p style="margin: 0; word-break: break-word;">${option.content}</p>
-            </div>`;
-                    }
-
-                    initialContent += `</div>`;
-                }
-
-                initialContent += `</div>`; // end option group
-            }
+            
             if (question.image) {
                 initialContent += `
                     <figure class="image image-style-align-center">

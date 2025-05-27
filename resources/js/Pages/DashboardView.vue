@@ -53,7 +53,9 @@
             <h1>Dashboard</h1>
             <nav>
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item active">QuizCraft | Dashboard</li>
+                    <li class="breadcrumb-item active">
+                        QuizCraft | Dashboard
+                    </li>
                 </ol>
             </nav>
         </div>
@@ -123,24 +125,7 @@
                     />
                 </Link>
             </div>
-            <div class="col-xxl-3 col-xl-3 col-md-6">
-                <Link href="/question">
-                    <!-- <x-dashboard-card
-                                type="Quizs"
-                                icon="bi bi-question-octagon-fill"
-                                caption="Total Quizs"
-                                count="{{ $quizTotalCount }}"
-                                class="bg-danger"
-                            ></x-dashboard-card> -->
-                    <DashboardCard
-                        type="Question"
-                        icon="bi bi-question-octagon-fill"
-                        caption="Total Question"
-                        :count="questionTotalCount"
-                        bgClass="bg-danger"
-                    />
-                </Link>
-            </div>
+
             <hr class="mb-4" />
 
             <div
@@ -148,7 +133,15 @@
                 :key="type.id"
                 class="col-xxl-4 col-xl-4 col-md-6"
             >
-                <Link href="/question" :data="{ type: type.id }">
+                <Link
+                    href="/question"
+                    :data="{
+                        type: type.id,
+                        ...($page.props.gradePortal
+                            ? { grade: $page.props.gradePortal }
+                            : {}),
+                    }"
+                >
                     <!-- <x-dashboard-card
                                 type="{{ $type->name }}"
                                 icon="bi bi-database-fill"
@@ -184,7 +177,6 @@ defineOptions({
 });
 defineProps({
     types: Array,
-    questionTotalCount: Number,
 });
 
 const file = ref(null);

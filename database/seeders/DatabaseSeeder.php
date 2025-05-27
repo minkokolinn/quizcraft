@@ -8,6 +8,9 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Faker\Factory as Faker;
+
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,6 +19,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $faker = Faker::create();
         
         User::create([
             "name" => "Dr Thiha",
@@ -52,51 +56,47 @@ class DatabaseSeeder extends Seeder
             "mark" => 10
         ]);
 
-        $types = Type::all();
-        foreach ($types as $type) {
-            for ($i = 1; $i <= 30; $i++) {
-                $grade = fake()->numberBetween(10,12);
-                $chapter = fake()->numberBetween(1, 6);
-                $body = '';
+        // $types = Type::all();
+        // foreach ($types as $type) {
+        //     for ($i = 1; $i <= 30; $i++) {
+        //         // $grade = fake()->numberBetween(10,12);
+        //         $grade = 10;
+        //         // $chapter = $faker->numberBetween(1, 6);
+        //         $chapter = 1;
+        //         $body = '';
 
-                switch ($type->id) {
-                    case 1: // True/False
-                    case 4: // Short Question
-                    case 5: // Long Question
-                        $body = fake()->sentence();
-                        break;
-                    case 2: // Completion
-                        $sentence = fake()->sentence();
-                        $words = explode(' ', $sentence);
-                        $blankIndex = rand(2, count($words) - 2);
-                        $words[$blankIndex] = '------';
-                        $body = implode(' ', $words);
-                        break;
+        //         switch ($type->id) {
+        //             case 1: // True/False
+        //             case 4: // Short Question
+        //             case 5: // Long Question
+        //                 $body = $faker->sentence();
+        //                 break;
+        //             case 2: // Completion
+        //                 $sentence = $faker->sentence();
+        //                 $words = explode(' ', $sentence);
+        //                 $blankIndex = rand(2, count($words) - 2);
+        //                 $words[$blankIndex] = '------';
+        //                 $body = implode(' ', $words);
+        //                 break;
 
-                    case 3: // Multiple Choice
-                        $sentence = fake()->sentence();
-                        $options = collect([
-                            ['label'=>'A','content'=>Str::random(25)],
-                            ['label'=>'B','content'=>Str::random(10)],
-                            ['label'=>'C','content'=>Str::random(10)],
-                            ['label'=>'D','content'=>Str::random(10)],
-                        ]);
-                        $body = $sentence;
-                        break;
-                }
+        //             case 3: // Multiple Choice
+        //                 $body = $faker->sentence();
+        //                 $body .= " (A) ".Str::random(10);
+        //                 $body .= " (B) ".Str::random(10);
+        //                 $body .= " (C) ".Str::random(10);
+        //                 $body .= " (D) ".Str::random(10);
+        //                 break;
+        //         }
 
-                $question=Question::create([
-                    "no"=>$i,
-                    "body"=>$body,
-                    "image"=>null,
-                    "grade"=>$grade,
-                    "chapter"=>$chapter,
-                    "type_id"=>$type->id
-                ]);
-                if($question->type_id==3){
-                    $question->options()->createMany($options);
-                }
-            }
-        }
+        //         $question=Question::create([
+        //             "no"=>$i,
+        //             "body"=>$body,
+        //             "image"=>null,
+        //             "grade"=>$grade,
+        //             "chapter"=>$chapter,
+        //             "type_id"=>$type->id
+        //         ]);
+        //     }
+        // }
     }
 }

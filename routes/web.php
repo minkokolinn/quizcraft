@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 
 Route::get("/", [UtilityController::class, "dashboardIndex"]);
+Route::get("/grade-portal", [UtilityController::class, "gradePortal"]);
+Route::post("/grade-portal-process", [UtilityController::class, "gradePortalProcess"]);
 
 Route::get("/type", [TypeController::class, "index"]);
 Route::get("/type/create", [TypeController::class, "create"]);

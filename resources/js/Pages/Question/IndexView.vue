@@ -44,20 +44,6 @@
                         <br />
                         {{ selectedDetail?.body }}
                     </p>
-                    <div
-                        v-if="
-                            selectedDetail?.type_id == 3 &&
-                            selectedDetail?.options.length > 0
-                        "
-                        class="mb-2"
-                    >
-                        <span
-                            v-for="option in selectedDetail.options"
-                            :key="option.id"
-                            class="me-3"
-                            >({{ option.label }}) {{ option.content }}
-                        </span>
-                    </div>
                     <div>
                         <strong>Image</strong>
                         <br />
@@ -259,19 +245,6 @@
                             class="bi bi-file-image text-primary"
                         ></i>
                         {{ limitWithMore(question.body, 150) }}
-                        <div
-                            v-if="
-                                question.type_id == 3 &&
-                                question.options.length > 0
-                            "
-                        >
-                            <span
-                                v-for="option in question.options"
-                                :key="option.id"
-                                class="badge bg-dark me-2"
-                                >({{ option.label }}) {{ option.content }}</span
-                            >
-                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -399,7 +372,7 @@ watch(
         if (props.grade) params.grade = props.grade;
         if (props.chapter) params.chapter = props.chapter;
         router.get("/question", params, { preserveState: true });
-    }, 500)
+    }, 400)
 );
 
 // selection for update and delete

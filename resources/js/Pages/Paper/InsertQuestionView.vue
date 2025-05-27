@@ -164,20 +164,6 @@
                                 >
                                     {{ question.no }} . <i v-if="question.image" class="bi bi-file-image text-primary"></i> {{ question.body }}
                                 </div>
-                                <div
-                                    v-if="
-                                        question.type_id == 3 &&
-                                        question.options.length > 0
-                                    "
-                                >
-                                    <span
-                                        v-for="option in question.options"
-                                        :key="option.id"
-                                        class="badge bg-dark me-2"
-                                        >({{ option.label }})
-                                        {{ option.content }}</span
-                                    >
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -319,14 +305,6 @@
                         >
                             <i class="bi bi-x-circle"></i>
                         </span>
-                        <div v-if="question.options.length > 0">
-                            <span
-                                v-for="option in question.options"
-                                :key="option.id"
-                                class="me-5"
-                                >({{ option.label }}) {{ option.content }}</span
-                            >
-                        </div>
                     </li>
                 </ul>
             </div>

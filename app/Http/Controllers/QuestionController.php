@@ -8,6 +8,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -89,10 +90,6 @@ class QuestionController extends Controller
             "grade" => ["required", "numeric"],
             "chapter" => ["required", "numeric"],
             "type_id" => ["required", "exists:types,id"],
-            "A" => ["nullable", "string"],
-            "B" => ["nullable", "string"],
-            "C" => ["nullable", "string"],
-            "D" => ["nullable", "string"],
         ]);
 
         if ($request->hasFile("image")) {
@@ -102,7 +99,7 @@ class QuestionController extends Controller
             $request->file("image")->move(public_path("uploads"), $filename);
 
             // Store only the relative path in the database
-            $formData["image"] = "/public/uploads/" . $filename;
+            $formData["image"] = "/uploads/" . $filename;
         }
 
         try {
@@ -120,16 +117,7 @@ class QuestionController extends Controller
                     ->increment('no');
             }
 
-            $optionsData = collect(['A', 'B', 'C', 'D'])->map(function ($label) use ($request) {
-                $content = $request->input($label);
-                return $content ? ['label' => $label, 'content' => $content] : null;
-            })->filter()->values()->all();
-            unset($formData['A'], $formData['B'], $formData['C'], $formData['D']);
-
             $question = Question::create($formData);
-            if ($formData["type_id"] == 3 && !empty($optionsData)) {
-                $question->options()->createMany($optionsData);
-            }
         } catch (Exception $e) {
             return back()->withErrors(["error" => "Failed to create question!!"]);
         }
@@ -154,10 +142,6 @@ class QuestionController extends Controller
             "grade" => ["required", "numeric"],
             "chapter" => ["required", "numeric"],
             "type_id" => ["required", "exists:types,id"],
-            "A" => ["nullable", "string"],
-            "B" => ["nullable", "string"],
-            "C" => ["nullable", "string"],
-            "D" => ["nullable", "string"],
         ]);
 
         if ($request->hasFile("image")) {
@@ -167,7 +151,7 @@ class QuestionController extends Controller
             $request->file("image")->move(public_path("uploads"), $filename);
 
             // Store only the relative path in the database
-            $formData["image"] = "/public/uploads/" . $filename;
+            $formData["image"] = "/uploads/" . $filename;
         }
         try {
             $question = Question::findOrFail($id);
@@ -191,17 +175,7 @@ class QuestionController extends Controller
                     ->increment('no');
             }
 
-            $optionsData = collect(['A', 'B', 'C', 'D'])->map(function ($label) use ($request) {
-                $content = $request->input($label);
-                return $content ? ['label' => $label, 'content' => $content] : null;
-            })->filter()->values()->all();
-            unset($updatedData['A'], $updatedData['B'], $updatedData['C'], $updatedData['D']);
-
             $question->update($updatedData);
-            if ($updatedData["type_id"] == 3 && !empty($optionsData)) {
-                $question->options()->delete();
-                $question->options()->createMany($optionsData);
-            }
         } catch (ModelNotFoundException $e) {
             return back()->withErrors(["error" => "No question found to update!"]);
         } catch (Exception $e) {
@@ -220,16 +194,41 @@ class QuestionController extends Controller
             return back()->withErrors(["error" => "No Ids found to delete!"]);
         }
 
-        $images = Question::whereIn("id", $ids)->pluck("image")->filter();
+        DB::beginTransaction();
 
-        foreach ($images as $imagePath) {
-            $relativePath = str_replace('/public', '', $imagePath); // remove wrong prefix
-            $fullPath = public_path($relativePath); // get actual full path
-            if (File::exists($fullPath)) {
-                File::delete($fullPath);
+        try {
+            foreach ($ids as $id) {
+                $question = Question::find($id);
+                if (!$question) {
+                    continue;
+                }
+
+                if ($question->image) {
+                    $relativePath = $question->image; // remove wrong prefix
+                    $fullPath = public_path($relativePath); // get actual full path
+                    if (File::exists($fullPath)) {
+                        File::delete($fullPath);
+                    }
+                }
+
+                $typeId = $question->type_id;
+                $grade = $question->grade;
+                $chapter = $question->chapter;
+                $no = $question->no;
+
+                $question->delete();
+
+                Question::where("type_id", $typeId)
+                    ->where("grade", $grade)
+                    ->where("chapter", $chapter)
+                    ->where("no", ">", $no)
+                    ->decrement("no");
             }
+            DB::commit();
+            return redirect()->back();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(["error" => "Failed to delete questions."]);
         }
-
-        Question::whereIn("id", $ids)->delete();
     }
 }

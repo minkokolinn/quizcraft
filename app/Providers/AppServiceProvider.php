@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Type;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 
@@ -22,7 +23,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Inertia::share([
-            "types" => Type::withCount("questions")->get(),
+            'types' => fn() => Type::withCount(['questions' => function ($query) {
+                $gradePortal = Session::get('gradePortal');
+                if ($gradePortal) {
+                    $query->where('grade', $gradePortal);
+                }
+            }])->get(),
         ]);
     }
 }

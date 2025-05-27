@@ -21,7 +21,8 @@
                     data-bs-toggle="collapse"
                     href="#"
                 >
-                    <i class="bi bi-question-octagon-fill"></i><span>Question</span
+                    <i class="bi bi-question-octagon-fill"></i
+                    ><span>Question</span
                     ><i class="bi bi-chevron-down ms-auto"></i>
                 </Link>
                 <ul
@@ -30,12 +31,27 @@
                     data-bs-parent="#sidebar-nav"
                 >
                     <li>
-                        <Link href="/question">
+                        <Link
+                            href="/question"
+                            :data="{
+                                ...($page.props.gradePortal
+                                    ? { grade: $page.props.gradePortal }
+                                    : {}),
+                            }"
+                        >
                             <i class="bi bi-circle"></i><span>ALL</span>
                         </Link>
                     </li>
                     <li v-for="type in $page.props.types" :key="type.id">
-                        <Link href="/question" :data="{type: type.id}">
+                        <Link
+                            href="/question"
+                            :data="{
+                                type: type.id,
+                                ...($page.props.gradePortal
+                                    ? { grade: $page.props.gradePortal }
+                                    : {}),
+                            }"
+                        >
                             <i class="bi bi-circle"></i
                             ><span>{{ type.name }}</span>
                         </Link>
@@ -71,10 +87,16 @@
             </li>
             <li class="nav-heading">Utility</li>
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/setting">
+                <Link class="nav-link collapsed" href="/profile">
                     <i class="bi bi-gear-fill"></i>
                     <span>Setting</span>
-                </a>
+                </Link>
+            </li>
+            <li class="nav-item">
+                <Link class="nav-link collapsed" href="/grade-portal">
+                    <i class="bi bi-box-arrow-left"></i>
+                    <span>Exit</span>
+                </Link>
             </li>
         </ul>
     </aside>

@@ -10,16 +10,12 @@ class Question extends Model
     /** @use HasFactory<\Database\Factories\QuestionFactory> */
     use HasFactory;
 
-    protected $with = ["type","options"];
+    protected $with = ["type"];
 
     protected $guarded = ["id"];
 
     public function type(){
         return $this->belongsTo(Type::class);
-    }
-
-    public function options(){
-        return $this->hasMany(Option::class);
     }
 
     public function scopeFilter($query, $request){

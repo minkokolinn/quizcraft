@@ -14,9 +14,20 @@ class UtilityController extends Controller
 {
     public function dashboardIndex()
     {
-        return Inertia::render("DashboardView", [
-            "questionTotalCount" => Question::count()
+        return Inertia::render("DashboardView");
+    }
+
+    public function gradePortal()
+    {
+        return Inertia::render("GradePortalView", [
+            "user" => User::first()
         ]);
+    }
+
+    public function gradePortalProcess(Request $request)
+    {
+        session(['gradePortal' => $request->grade]);
+        return redirect("/");
     }
 
     public function profile()
@@ -49,7 +60,7 @@ class UtilityController extends Controller
     }
 
     public function runBackup(Request $request)
-    {   
+    {
         if (!$request->input('key') || $request->input('key') !== "0WJHQ6DlhBquuA6DQke34pEe5TBFrT") {
             abort(403, 'Unauthorized: Invalid or missing key');
         }
@@ -62,7 +73,6 @@ class UtilityController extends Controller
             $tableOrder = [
                 'types',
                 'questions',
-                'options',
             ];
 
             $systemTables = ['migrations', 'jobs', 'failed_jobs', 'cache', 'sessions', 'users', 'password_reset_tokens', 'job_batches', 'cache_locks'];

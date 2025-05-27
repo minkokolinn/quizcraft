@@ -4,7 +4,15 @@
     <AlertToast ref="alertToastRef" />
 
     <h5 class="card-title">
-        <Link :href="`/question?type=${type.id}`" class="px-2"
+        <Link
+            href="/question"
+            :data="{
+                type: type.id,
+                ...($page.props.gradePortal
+                    ? { grade: $page.props.gradePortal }
+                    : {}),
+            }"
+            class="px-2"
             ><i class="bi bi-caret-left-fill" style="font-size: 16px"></i
         ></Link>
         {{ type.name }} {{ question ? "Edit" : "Entry" }} Form
@@ -90,64 +98,7 @@
             </textarea>
             <InputError :message="form.errors.body" />
         </div>
-        <div v-if="type.id == 3" class="row">
-            <div class="col-md-6 col-lg-3">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="AInput">A.</span>
-                    <input
-                        v-model="form.A"
-                        type="text"
-                        class="form-control"
-                        placeholder="Enter Option A"
-                        autocomplete="off"
-                        required
-                    />
-                </div>
-                <InputError :message="form.errors.A" />
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="BInput">B.</span>
-                    <input
-                        v-model="form.B"
-                        type="text"
-                        class="form-control"
-                        placeholder="Enter Option B"
-                        autocomplete="off"
-                        required
-                    />
-                </div>
-                <InputError :message="form.errors.B" />
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="CInput">C.</span>
-                    <input
-                        v-model="form.C"
-                        type="text"
-                        class="form-control"
-                        placeholder="Enter Option C"
-                        autocomplete="off"
-                        required
-                    />
-                </div>
-                <InputError :message="form.errors.C" />
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="DInput">D.</span>
-                    <input
-                        v-model="form.D"
-                        type="text"
-                        class="form-control"
-                        placeholder="Enter Option D"
-                        autocomplete="off"
-                        required
-                    />
-                </div>
-                <InputError :message="form.errors.D" />
-            </div>
-        </div>
+
         <div v-if="!hasOldImage" class="col-12 mb-2">
             <label for="imageInput" class="form-label"><b>Image</b></label>
             <input
@@ -176,7 +127,7 @@
     </form>
 </template>
 <script setup>
-import { router, useForm } from "@inertiajs/vue3";
+import { router, useForm, usePage } from "@inertiajs/vue3";
 import { onMounted, ref, watch } from "vue";
 import BlankLayout from "../../Layouts/BlankLayout.vue";
 import AlertToast from "../Components/AlertToast.vue";
@@ -193,6 +144,8 @@ const props = defineProps({
     question: Object,
 });
 
+const page = usePage();
+
 const form = useForm({
     no: props.question ? props.question.no : null,
     body: props.question ? props.question.body : null,
@@ -200,22 +153,6 @@ const form = useForm({
     grade: props.question ? props.question.grade : "",
     chapter: props.question ? props.question.chapter : "",
     type_id: props.type.id,
-    A:
-        props.question && props.question.type_id == 3
-            ? props.question.options[0].content
-            : null,
-    B:
-        props.question && props.question.type_id == 3
-            ? props.question.options[1].content
-            : null,
-    C:
-        props.question && props.question.type_id == 3
-            ? props.question.options[2].content
-            : null,
-    D:
-        props.question && props.question.type_id == 3
-            ? props.question.options[3].content
-            : null,
 });
 const hasOldImage = ref(!!props.question?.image);
 
@@ -337,7 +274,7 @@ const submit = () => {
                             params: {
                                 type: props.type.id,
                                 grade: form.grade,
-                                chapter: form.chapter
+                                chapter: form.chapter,
                             },
                         }
                     );
@@ -360,4 +297,10 @@ const submit = () => {
         });
     }
 };
+
+onMounted(() => {
+    if (page.props.gradePortal) {
+        form.grade = page.props.gradePortal;
+    }
+});
 </script>
